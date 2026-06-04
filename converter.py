@@ -142,13 +142,15 @@ class VideoConverter:
             
         return status
 
-    def run(self, files: List[Path], base_dir: Path) -> ConversionResult:
+    def run(self, files: List[Path], base_dir: Path, progress_callback=None) -> ConversionResult:
         """
         Execute the batch conversion process using multithreading.
         
         Args:
             files (List[Path]): List of .mov files to convert.
             base_dir (Path): The root directory, used to calculate relative output paths.
+            progress_callback (callable, optional): A callback function called after each file completes, 
+                                                    passing the current ConversionResult.
             
         Returns:
             ConversionResult: The summary of the conversion process.
@@ -192,6 +194,14 @@ class VideoConverter:
                         
                 if pbar:
                     pbar.update(1)
+                    
+                if progress_callback:
+                    with self.lock:
+                        # Copy the current result so we don't pass a mutating object across threads 
+                        # if the callback queues it to another thread without a lock
+                        from copy import copy
+                        current_res = copy(result)
+                    progress_callback(current_res)
                     
         if pbar:
             pbar.close()

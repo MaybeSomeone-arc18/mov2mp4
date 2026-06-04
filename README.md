@@ -1,94 +1,102 @@
-# MOV2MP4 Converter
+# 🎬 MOV2MP4 Converter
 
-A production-ready Python CLI application that batch converts `.mov` video files to `.mp4` format using FFmpeg.
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/MaybeSomeone-arc18/mov2mp4)
 
-## Features
+A fast, production-ready Python tool that batch converts `.mov` video files to `.mp4` format using FFmpeg. It comes with both a powerful Command Line Interface (CLI) and a sleek, modern Desktop GUI.
 
-- **Recursive Scanning**: Automatically finds all `.mov` files within a specified directory and its subdirectories.
-- **Multithreading**: Utilizes concurrent threads to convert multiple videos simultaneously for faster processing.
-- **Progress Tracking**: Displays a clean, real-time progress bar (via `tqdm`) along with individual file status.
-- **Smart Output Handling**: Replicates the original folder structure if a custom output directory is specified.
-- **Safe Conversion**: Skips files that have already been converted unless explicitly told to overwrite.
-- **Comprehensive Logging**: Generates timestamped logs with detailed information on each conversion run.
+---
 
-## Requirements
+## ✨ Key Features
 
-- Python 3.11+
-- FFmpeg installed and accessible in the system PATH.
-- `tqdm` (for progress bars)
+- **Modern Desktop GUI**: A beautiful, native-feeling dark/light mode interface built with `customtkinter`.
+- **Recursive Folder Scanning**: Automatically finds all `.mov` files within a specified directory and its sub-folders.
+- **Lightning Fast (Multithreading)**: Utilizes concurrent threads to convert multiple videos simultaneously.
+- **Real-Time Progress Tracking**: 
+  - *CLI*: Displays a clean progress bar via `tqdm`.
+  - *GUI*: Features a visual progress bar and live file-count updates.
+- **Smart Output Handling**: Automatically replicates your original folder structure if you specify a custom output directory.
+- **Safe Conversion**: Skips previously converted files to save time, unless you explicitly choose to `--overwrite`.
+- **Comprehensive Logging**: Generates timestamped logs with detailed information on each run.
 
-## Installation
+---
 
-1. **Clone the repository or download the source code.**
-2. **Install Python dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. **Install FFmpeg:**
-   - **macOS (using Homebrew):** `brew install ffmpeg`
-   - **Ubuntu/Debian:** `sudo apt install ffmpeg`
-   - **Windows:** Download from [gyan.dev](https://www.gyan.dev/ffmpeg/builds/) or use `winget install ffmpeg` and add it to your System PATH.
+## 🚀 Quick Start
 
-## Usage
+### 1. Prerequisites
+- **Python 3.11+**
+- **FFmpeg**: Must be installed and accessible in your system PATH.
+  - *macOS*: `brew install ffmpeg`
+  - *Ubuntu/Debian*: `sudo apt install ffmpeg`
+  - *Windows*: Download from [gyan.dev](https://www.gyan.dev/ffmpeg/builds/) or run `winget install ffmpeg`
 
+### 2. Installation
+Clone the repository and install the required dependencies:
+```bash
+git clone https://github.com/MaybeSomeone-arc18/mov2mp4.git
+cd mov2mp4
+pip install -r requirements.txt
+```
+*(Dependencies include `tqdm` for CLI progress and `customtkinter` for the GUI).*
+
+---
+
+## 💻 Usage
+
+### 🖥️ Modern Desktop GUI (Recommended)
+If you prefer a visual interface, simply run:
+```bash
+python gui.py
+```
+This opens a modern desktop window where you can:
+- Browse and select your input/output folders visually.
+- Toggle options to delete original files or overwrite existing `.mp4`s.
+- Press `Enter` to start, and watch the live progress bar.
+
+### ⌨️ Command Line Interface (CLI)
 Basic usage requires only the target folder path:
-
 ```bash
 python convert.py /path/to/videos
 ```
 
-### Desktop GUI (No Terminal Required)
+#### CLI Options
+| Flag | Description |
+|------|-------------|
+| `folder_path` | **(Required)** The root directory to scan for `.mov` files. |
+| `--output <path>` | Specifies a custom directory to save converted `.mp4` files. |
+| `--delete-original`| Deletes the original `.mov` files after successful conversion. |
+| `--overwrite` | Forces FFmpeg to overwrite existing `.mp4` files. |
+| `--verbose` | Enables debug-level logging output in the console. |
 
-If you prefer a visual interface, you can run the Tkinter GUI:
-
-```bash
-python gui.py
-```
-This will open a desktop window where you can select folders using a visual file browser and click a button to convert.
-
-### CLI Options
-
-- `folder_path` (Required): The root directory to scan for `.mov` files.
-- `--delete-original`: Deletes the original `.mov` files after they are successfully converted.
-- `--output <path>`: Specifies a custom directory to save the converted `.mp4` files. The original folder hierarchy will be preserved inside this directory.
-- `--overwrite`: Forces FFmpeg to overwrite existing `.mp4` files. By default, existing files are skipped.
-- `--verbose`: Enables debug-level logging output in the console.
-
-### Examples
-
-**1. Basic conversion in place:**
+#### CLI Examples
+*Convert in place:*
 ```bash
 python convert.py ./videos
 ```
-
-**2. Convert and delete original files:**
+*Save to a new directory and delete the original `.mov` files:*
 ```bash
-python convert.py ./videos --delete-original
+python convert.py ./videos --output ./converted_videos --delete-original
 ```
-
-**3. Save converted files to a separate directory:**
-```bash
-python convert.py ./videos --output ./converted_videos
-```
-
-**4. Force overwrite and show detailed logs:**
+*Force overwrite existing files with verbose logging:*
 ```bash
 python convert.py ./videos --overwrite --verbose
 ```
 
-## Troubleshooting
+---
 
-- **`Error: FFmpeg is required but was not found.`**
-  Ensure FFmpeg is installed correctly. Try running `ffmpeg -version` in your terminal. If it's not recognized, you need to add FFmpeg's `bin` folder to your system's PATH environment variable.
-- **`PermissionError` or files not converting:**
-  Ensure you have read and write access to both the source folder and the destination folder.
-- **System slowing down during conversion:**
-  The tool uses multithreading up to half of your available CPU cores. Video conversion is CPU intensive.
+## 🛠️ Troubleshooting
 
-## Running Tests
+- **`FFmpeg Missing` Error:**
+  Ensure FFmpeg is installed correctly. Run `ffmpeg -version` in your terminal. If it's not recognized, you must add FFmpeg to your system's PATH environment variable.
+- **Permission Errors:**
+  Ensure you have read/write access to both the source and destination folders.
+- **System Slowdown:**
+  Video conversion is highly CPU-intensive. The tool intelligently limits threads to half your available CPU cores to prevent completely freezing your system, but high CPU usage is expected.
+
+---
+
+## 🧪 Running Tests
 
 Unit tests are provided for core functionalities. From the root directory, run:
-
 ```bash
 python -m unittest discover tests
 ```

@@ -1,5 +1,5 @@
-import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+import customtkinter as ctk
+from tkinter import filedialog, messagebox
 import threading
 from pathlib import Path
 
@@ -8,25 +8,42 @@ from utils import check_ffmpeg_installed, find_mov_files
 from converter import VideoConverter
 from logger import setup_logger
 
-class Mov2Mp4App:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("MOV2MP4 Converter")
-        self.root.geometry("600x450")
-        self.root.resizable(False, False)
+ctk.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
+ctk.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
+
+class Mov2Mp4App(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        
+        self.title("MOV2MP4 Converter")
+        self.geometry("650x550")
+        self.resizable(False, False)
         
         # Set up a logger for the GUI run
         log_dir = Path.cwd() / "logs"
         self.logger = setup_logger(log_dir, verbose=False)
         
         # Variables
-        self.input_folder = tk.StringVar()
-        self.output_folder = tk.StringVar()
-        self.delete_original = tk.BooleanVar(value=False)
-        self.overwrite = tk.BooleanVar(value=False)
+        self.input_folder = ctk.StringVar()
+        self.output_folder = ctk.StringVar()
+        self.delete_original = ctk.BooleanVar(value=False)
+        self.overwrite = ctk.BooleanVar(value=False)
         
         self.setup_ui()
         self.check_prerequisites()
+        self.setup_bindings()
+        
+        # Force window to the front on macOS
+        self.lift()
+        self.attributes('-topmost', True)
+        self.after(50, lambda: self.attributes('-topmost', False))
+
+    def setup_bindings(self):
+        # Keyboard shortcuts
+        self.bind('<Return>', lambda event: self.start_conversion())
+        self.bind('<Escape>', lambda event: self.quit())
+        self.bind('<Command-q>', lambda event: self.quit())
+        self.bind('<Control-q>', lambda event: self.quit())
 
     def check_prerequisites(self):
         if not check_ffmpeg_installed():
@@ -34,42 +51,72 @@ class Mov2Mp4App:
                 "FFmpeg Missing", 
                 "FFmpeg is not installed or not in the system PATH.\n\nPlease install FFmpeg to use this application."
             )
-            self.convert_btn.config(state=tk.DISABLED)
+            self.convert_btn.configure(state="disabled")
 
     def setup_ui(self):
         # Main Frame
-        main_frame = ttk.Frame(self.root, padding="20")
-        main_frame.pack(fill=tk.BOTH, expand=True)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+        
+        main_frame = ctk.CTkFrame(self, fg_color="transparent")
+        main_frame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+        main_frame.grid_columnconfigure(0, weight=1)
         
         # Title
-        title_label = ttk.Label(main_frame, text="Batch Convert MOV to MP4", font=("Helvetica", 16, "bold"))
-        title_label.grid(row=0, column=0, columnspan=3, pady=(0, 20))
+        title_label = ctk.CTkLabel(main_frame, text="Batch Convert MOV to MP4", font=ctk.CTkFont(size=24, weight="bold"))
+        title_label.grid(row=0, column=0, pady=(0, 20))
+        
+        # Paths Card
+        paths_frame = ctk.CTkFrame(main_frame)
+        paths_frame.grid(row=1, column=0, sticky="ew", pady=(0, 15))
+        paths_frame.grid_columnconfigure(1, weight=1)
         
         # Input Folder
-        ttk.Label(main_frame, text="Input Folder:").grid(row=1, column=0, sticky=tk.W, pady=5)
-        ttk.Entry(main_frame, textvariable=self.input_folder, width=40).grid(row=1, column=1, padx=10, pady=5)
-        ttk.Button(main_frame, text="Browse", command=self.browse_input).grid(row=1, column=2, pady=5)
+        input_label = ctk.CTkLabel(paths_frame, text="Input Folder:", font=ctk.CTkFont(weight="bold"))
+        input_label.grid(row=0, column=0, padx=15, pady=(15, 5), sticky="w")
+        
+        self.input_entry = ctk.CTkEntry(paths_frame, textvariable=self.input_folder, placeholder_text="Select folder with .mov files...")
+        self.input_entry.grid(row=0, column=1, padx=(0, 15), pady=(15, 5), sticky="ew")
+        
+        input_btn = ctk.CTkButton(paths_frame, text="Browse", width=80, command=self.browse_input)
+        input_btn.grid(row=0, column=2, padx=(0, 15), pady=(15, 5))
         
         # Output Folder
-        ttk.Label(main_frame, text="Output Folder (Optional):").grid(row=2, column=0, sticky=tk.W, pady=5)
-        ttk.Entry(main_frame, textvariable=self.output_folder, width=40).grid(row=2, column=1, padx=10, pady=5)
-        ttk.Button(main_frame, text="Browse", command=self.browse_output).grid(row=2, column=2, pady=5)
+        output_label = ctk.CTkLabel(paths_frame, text="Output Folder:", font=ctk.CTkFont(weight="bold"))
+        output_label.grid(row=1, column=0, padx=15, pady=(5, 15), sticky="w")
         
-        # Options Frame
-        options_frame = ttk.LabelFrame(main_frame, text="Options", padding="10")
-        options_frame.grid(row=3, column=0, columnspan=3, sticky=tk.EW, pady=20)
+        self.output_entry = ctk.CTkEntry(paths_frame, textvariable=self.output_folder, placeholder_text="(Optional) Save to specific folder...")
+        self.output_entry.grid(row=1, column=1, padx=(0, 15), pady=(5, 15), sticky="ew")
         
-        ttk.Checkbutton(options_frame, text="Delete original .mov files after conversion", variable=self.delete_original).pack(anchor=tk.W, pady=2)
-        ttk.Checkbutton(options_frame, text="Overwrite existing .mp4 files", variable=self.overwrite).pack(anchor=tk.W, pady=2)
+        output_btn = ctk.CTkButton(paths_frame, text="Browse", width=80, command=self.browse_output)
+        output_btn.grid(row=1, column=2, padx=(0, 15), pady=(5, 15))
+        
+        # Options Card
+        options_frame = ctk.CTkFrame(main_frame)
+        options_frame.grid(row=2, column=0, sticky="ew", pady=(0, 20))
+        options_frame.grid_columnconfigure(0, weight=1)
+        
+        options_label = ctk.CTkLabel(options_frame, text="Conversion Options", font=ctk.CTkFont(weight="bold"))
+        options_label.grid(row=0, column=0, padx=15, pady=(10, 5), sticky="w")
+        
+        del_chk = ctk.CTkCheckBox(options_frame, text="Delete original .mov files after conversion", variable=self.delete_original)
+        del_chk.grid(row=1, column=0, padx=15, pady=(5, 5), sticky="w")
+        
+        ovr_chk = ctk.CTkCheckBox(options_frame, text="Overwrite existing .mp4 files", variable=self.overwrite)
+        ovr_chk.grid(row=2, column=0, padx=15, pady=(5, 15), sticky="w")
         
         # Convert Button
-        self.convert_btn = ttk.Button(main_frame, text="Start Conversion", command=self.start_conversion)
-        self.convert_btn.grid(row=4, column=0, columnspan=3, pady=10)
+        self.convert_btn = ctk.CTkButton(main_frame, text="Start Conversion", font=ctk.CTkFont(size=16, weight="bold"), height=40, command=self.start_conversion)
+        self.convert_btn.grid(row=3, column=0, pady=(10, 15))
         
-        # Progress and Status
-        self.status_var = tk.StringVar(value="Ready.")
-        self.status_label = ttk.Label(main_frame, textvariable=self.status_var, font=("Helvetica", 10, "italic"))
-        self.status_label.grid(row=5, column=0, columnspan=3, pady=5)
+        # Progress Bar (Hidden initially)
+        self.progress_bar = ctk.CTkProgressBar(main_frame, mode="determinate")
+        self.progress_bar.set(0)
+        
+        # Status Label
+        self.status_var = ctk.StringVar(value="Ready.")
+        self.status_label = ctk.CTkLabel(main_frame, textvariable=self.status_var, font=ctk.CTkFont(slant="italic"), text_color="gray")
+        self.status_label.grid(row=5, column=0, pady=(0, 10))
 
     def browse_input(self):
         folder = filedialog.askdirectory(title="Select Folder containing .mov files")
@@ -93,21 +140,33 @@ class Mov2Mp4App:
 
         out_path = Path(self.output_folder.get()) if self.output_folder.get() else None
         
-        self.convert_btn.config(state=tk.DISABLED)
+        self.convert_btn.configure(state="disabled")
         self.status_var.set("Scanning for .mov files...")
+        self.progress_bar.grid(row=4, column=0, sticky="ew", padx=20, pady=(0, 10))
+        self.progress_bar.set(0)
         
         # Run conversion in a separate thread so GUI doesn't freeze
         threading.Thread(target=self.run_conversion_thread, args=(in_path, out_path), daemon=True).start()
+
+    def update_progress(self, current_result):
+        # Calculate completion percentage
+        completed = current_result.converted + current_result.skipped + current_result.failed
+        total = current_result.total_found
+        
+        if total > 0:
+            progress = completed / total
+            self.progress_bar.set(progress)
+            self.status_var.set(f"Converting... ({completed}/{total})")
 
     def run_conversion_thread(self, in_path, out_path):
         try:
             mov_files = find_mov_files(in_path)
             
             if not mov_files:
-                self.root.after(0, self.conversion_finished, "No .mov files found in the selected folder.", "info")
+                self.after(0, self.conversion_finished, "No .mov files found in the selected folder.", "info")
                 return
                 
-            self.root.after(0, lambda: self.status_var.set(f"Converting {len(mov_files)} files. Please wait..."))
+            self.after(0, lambda: self.status_var.set(f"Found {len(mov_files)} files. Starting conversion..."))
             
             converter = VideoConverter(
                 delete_original=self.delete_original.get(),
@@ -115,7 +174,11 @@ class Mov2Mp4App:
                 overwrite=self.overwrite.get()
             )
             
-            result = converter.run(mov_files, in_path)
+            # Helper to wrap the callback so it executes on the main thread safely
+            def progress_cb(res):
+                self.after(0, self.update_progress, res)
+                
+            result = converter.run(mov_files, in_path, progress_callback=progress_cb)
             
             msg = (
                 f"Conversion Complete!\n\n"
@@ -124,24 +187,27 @@ class Mov2Mp4App:
                 f"Skipped: {result.skipped}\n"
                 f"Failed: {result.failed}"
             )
-            self.root.after(0, self.conversion_finished, msg, "success")
+            self.after(0, self.conversion_finished, msg, "success")
             
         except Exception as e:
             self.logger.exception("Error during conversion thread")
-            self.root.after(0, self.conversion_finished, f"An error occurred:\n{str(e)}", "error")
+            self.after(0, self.conversion_finished, f"An error occurred:\n{str(e)}", "error")
 
     def conversion_finished(self, message, msg_type):
         self.status_var.set("Ready.")
-        self.convert_btn.config(state=tk.NORMAL)
+        self.convert_btn.configure(state="normal")
+        self.progress_bar.grid_remove()  # Hide progress bar when done
         
         if msg_type == "error":
             messagebox.showerror("Error", message)
+            self.status_label.configure(text_color="red")
         elif msg_type == "info":
             messagebox.showinfo("Information", message)
+            self.status_label.configure(text_color="gray")
         else:
             messagebox.showinfo("Success", message)
+            self.status_label.configure(text_color="green")
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = Mov2Mp4App(root)
-    root.mainloop()
+    app = Mov2Mp4App()
+    app.mainloop()
