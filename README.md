@@ -341,14 +341,6 @@ If you find this project useful:
 
 ---
 
-## 📄 License
-
-This project is licensed under the MIT License.
-
-See the LICENSE file for details.
-
----
-
 <p align="center">
 Built with ❤️ using Python and FFmpeg
 </p>
