@@ -12,9 +12,9 @@ mkdir build_assets\bin
 
 :: Download FFmpeg (Windows x64) from BtbN
 echo Downloading FFmpeg from BtbN...
-powershell -Command "Invoke-WebRequest -Uri 'https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip' -OutFile 'ffmpeg.zip'"
+powershell -Command "Invoke-WebRequest -Uri 'https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-08-10-13-17/ffmpeg-N-126039-g6bbc22dc09-win64-gpl.zip' -OutFile 'ffmpeg.zip'"
 powershell -Command "Expand-Archive -Path 'ffmpeg.zip' -DestinationPath 'build_assets\bin_temp'"
-move build_assets\bin_temp\ffmpeg-master-latest-win64-gpl\bin\ffmpeg.exe build_assets\bin\
+move build_assets\bin_temp\ffmpeg-N-126039-g6bbc22dc09-win64-gpl\bin\ffmpeg.exe build_assets\bin\
 rmdir /s /q build_assets\bin_temp
 del ffmpeg.zip
 

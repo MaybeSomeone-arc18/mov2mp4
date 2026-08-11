@@ -16,6 +16,9 @@ The bundled compiled binaries are provided by reputable third-party maintainers:
 
 ### Windows FFmpeg Binary
 - **Provider**: [BtbN / FFmpeg-Builds](https://github.com/BtbN/FFmpeg-Builds)
-- **License**: Provided as GPLv3 binaries.
+- **Source URL**: https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-08-10-13-17/ffmpeg-N-126039-g6bbc22dc09-win64-gpl.zip
+- **Architecture**: Native Windows x64
+- **Version/Build**: autobuild-2026-08-10-13-17 (Commit g6bbc22dc09)
+- **License / Configuration**: Provided as a statically linked GPL-licensed binary (`win64-gpl`). It is compiled with `--enable-gpl` and explicitly excludes `--enable-nonfree`.
 
 FFmpeg is a trademark of Fabrice Bellard, originator of the FFmpeg project.

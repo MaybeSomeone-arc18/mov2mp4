@@ -15,6 +15,24 @@ Whether you prefer the precision of a command-line interface or the simplicity o
 
 ---
 
+## 📥 Download
+
+### 🍎 macOS Apple Silicon
+
+Download the latest macOS preview release:
+**[MOV2MP4-macOS-arm64.dmg](https://github.com/MaybeSomeone-arc18/mov2mp4/releases/latest)**
+
+> [!IMPORTANT]
+> This is currently an **unsigned and non-notarized** preview build. Windows support is coming separately.
+>
+> **To launch the app for the first time:**
+> 1. Open the DMG.
+> 2. Drag `MOV2MP4` to your Applications folder.
+> 3. **Right-click** (or Control-click) `MOV2MP4` and choose **Open**.
+> 4. Confirm **Open** when macOS displays the developer verification warning.
+
+---
+
 ## ✨ Features
 
 ### Desktop GUI
