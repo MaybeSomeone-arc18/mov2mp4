@@ -1,112 +1,82 @@
 # 🎬 MOV2MP4
 
-> A fast, modern, and reliable batch video converter that transforms `.mov` files into `.mp4` using FFmpeg. Built with both a powerful Command Line Interface (CLI) and an intuitive Desktop GUI.
+A fast, simple batch MOV → MP4 converter powered by FFmpeg.
 
 ![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python)
 ![FFmpeg](https://img.shields.io/badge/Powered%20by-FFmpeg-green)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
-![Status](https://img.shields.io/badge/Status-Production%20Ready-success)
+![Status](https://img.shields.io/badge/Status-Stable-success)
+
+> Screenshots coming soon.
+
+MOV2MP4 is designed to automate the repetitive task of converting `.mov` files to `.mp4` formats. By discovering files recursively and processing them in parallel using an underlying FFmpeg engine, it handles heavy workloads effortlessly while keeping original directory structures intact.
+
+Whether you prefer the precision of a command-line interface or the simplicity of a modern desktop application, MOV2MP4 offers a seamless, reliable experience without unnecessary complexity.
 
 ---
 
-## ✨ Overview
-
-MOV2MP4 is designed for creators, developers, editors, and anyone who regularly works with video files.
-
-Instead of manually converting videos one at a time, MOV2MP4 automatically discovers `.mov` files, processes them in parallel, tracks progress in real time, and outputs optimized `.mp4` files while preserving your folder structure.
-
-Whether you're converting a handful of videos or thousands of files spread across multiple directories, MOV2MP4 handles the workflow efficiently and safely.
-
----
-
-## 🚀 Features
-
-### 🎨 Modern Desktop GUI
-
-A clean and responsive graphical interface built with `customtkinter`.
-
-- Dark and light appearance modes
-- Folder selection dialogs
-- One-click conversion
-- Real-time progress tracking
-- User-friendly workflow
-
-### ⚡ High Performance
-
-Designed for speed.
-
-- Multithreaded video processing
-- Concurrent file conversion
-- Optimized CPU utilization
-- Efficient batch processing
-
-### 📁 Smart File Management
-
-- Recursive folder scanning
-- Preserves original directory structure
-- Supports custom output locations
-- Automatically skips already converted files
-
-### 🛡️ Safe Conversion
-
-- Prevents accidental overwrites
-- Optional overwrite mode
-- Optional deletion of source files
-- Robust error handling
-
-### 📊 Detailed Logging
-
-Every run is logged for transparency and debugging.
-
-- Timestamped logs
-- Success and failure reporting
-- Debug mode support
-- Conversion statistics
-
----
-
-## 📸 Preview
+## ✨ Features
 
 ### Desktop GUI
+- Modern macOS-inspired interface
+- Drag & drop
+- File/folder selection
+- Conversion queue
+- Per-file status
+- Batch conversion
+- Output destination selection
+- Cancellation
+- Responsive UI
 
-Add screenshots or GIFs here:
+### Conversion
+- MOV → MP4
+- FFmpeg powered
+- Recursive folder scanning
+- Batch processing
+- Existing directory structure preservation
+- Overwrite control
+- Optional source deletion
 
-```text
-┌─────────────────────────────┐
-│         MOV2MP4             │
-│                             │
-│ Input Folder   [Browse]     │
-│ Output Folder  [Browse]     │
-│                             │
-│ ████████████░░░░░░ 65%      │
-│                             │
-│ Converted: 52 / 80 files    │
-│                             │
-│       [ Start Convert ]     │
-└─────────────────────────────┘
-```
+### CLI
+- Folder-based conversion
+- Custom output directory
+- Delete-original option
+- Overwrite option
+- Verbose logging
+
+### Reliability
+- Error handling
+- Conversion status
+- Logging
+- Threaded processing
+- Tests
+
+---
+
+## 📸 Screenshots
+
+> Screenshots coming soon.
+
+## 🎥 Demo
+
+> Demo coming soon.
 
 ---
 
 ## 🏗️ How It Works
 
 ```text
-Scan Folder
-    │
-    ▼
-Find All .mov Files
-    │
-    ▼
-Build Conversion Queue
-    │
-    ▼
-Process Files Concurrently
-    │
-    ▼
-Generate .mp4 Files
-    │
-    ▼
-Update Progress & Logs
+MOV files
+   ↓
+File discovery
+   ↓
+Conversion queue
+   ↓
+FFmpeg processing
+   ↓
+MP4 output
+   ↓
+Status / logs
 ```
 
 ---
@@ -114,42 +84,37 @@ Update Progress & Logs
 ## 📦 Installation
 
 ### 1. Clone the Repository
-
 ```bash
 git clone https://github.com/MaybeSomeone-arc18/mov2mp4.git
 cd mov2mp4
 ```
 
-### 2. Install Dependencies
-
+### 2. Set Up Environment
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
 ### 3. Install FFmpeg
-
 FFmpeg must be installed and available in your system PATH.
 
-#### macOS
-
+**macOS**
 ```bash
 brew install ffmpeg
 ```
 
-#### Ubuntu / Debian
-
+**Ubuntu / Debian**
 ```bash
 sudo apt install ffmpeg
 ```
 
-#### Windows
-
+**Windows**
 ```bash
 winget install ffmpeg
 ```
 
 Verify installation:
-
 ```bash
 ffmpeg -version
 ```
@@ -158,60 +123,56 @@ ffmpeg -version
 
 ## 🖥️ GUI Usage
 
-Launch the graphical application:
-
+1. Launch the application:
 ```bash
 python gui.py
 ```
 
-### GUI Features
+2. Add MOV files by:
+   - dragging them into the drop zone
+   - using Browse Files
+   - selecting a folder
 
-- Select source folder
-- Select destination folder
-- Enable overwrite mode
-- Delete originals after conversion
-- View live progress updates
-- Monitor conversion status
+3. Review the conversion queue.
+4. Choose the output destination.
+5. Configure optional settings:
+   - overwrite existing files
+   - delete originals
+6. Start conversion.
+7. Monitor per-file and overall conversion status.
+8. Cancel safely if needed.
+9. Open the output folder after completion.
 
 ---
 
 ## ⌨️ CLI Usage
 
-### Basic Conversion
-
 Convert all `.mov` files found inside a folder:
-
 ```bash
 python convert.py ./videos
 ```
 
-### Convert to a Custom Output Folder
-
+Convert to a Custom Output Folder:
 ```bash
 python convert.py ./videos --output ./converted
 ```
 
-### Delete Original Files After Conversion
-
+Delete Original Files After Conversion:
 ```bash
 python convert.py ./videos --delete-original
 ```
 
-### Force Overwrite Existing Files
-
+Force Overwrite Existing Files:
 ```bash
 python convert.py ./videos --overwrite
 ```
 
-### Enable Verbose Logging
-
+Enable Verbose Logging:
 ```bash
 python convert.py ./videos --verbose
 ```
 
----
-
-## 📚 Command Reference
+### Command Reference
 
 | Argument | Description |
 |----------|-------------|
@@ -225,92 +186,107 @@ python convert.py ./videos --verbose
 
 ## 📂 Example
 
-### Input
+Folder structure is preserved automatically.
 
+**Input:**
 ```text
 Videos/
 ├── Vacation/
 │   ├── beach.mov
 │   └── sunset.mov
-│
 └── Family/
     └── birthday.mov
 ```
 
-### Output
-
+**Output:**
 ```text
 Converted/
 ├── Vacation/
 │   ├── beach.mp4
 │   └── sunset.mp4
-│
 └── Family/
     └── birthday.mp4
 ```
 
-Folder structure is preserved automatically.
+---
+
+## 🏛️ Architecture
+
+```text
+          GUI                      CLI
+           │                        │
+ ┌─────────┴────────┐      ┌────────┴────────┐
+ │ File selection   │      │ Args parsing    │
+ │ Conversion queue │      │ Command flow    │
+ │ Status updates   │      │ Verbose logging │
+ └─────────┬────────┘      └────────┬────────┘
+           │                        │
+           ▼                        ▼
+      ┌──────────────────────────────────┐
+      │        Conversion Engine         │
+      └────────────────┬─────────────────┘
+                       ▼
+      ┌──────────────────────────────────┐
+      │              FFmpeg              │
+      └────────────────┬─────────────────┘
+                       ▼
+      ┌──────────────────────────────────┐
+      │            MP4 output            │
+      └──────────────────────────────────┘
+```
+
+Both the GUI and CLI share the exact same underlying multithreaded Conversion Engine, ensuring that behavior, error handling, and reliability are consistent regardless of how you choose to use the tool.
 
 ---
 
-## 🧪 Running Tests
+## 🧪 Testing
 
 Run all unit tests:
-
 ```bash
 python -m unittest discover tests
 ```
+
+Tests cover the core conversion logic, path resolution, CLI flags, FFmpeg integration, subprocess mocking, and file deletion safeguards.
 
 ---
 
 ## 🛠️ Troubleshooting
 
 ### FFmpeg Not Found
-
 Check installation:
-
 ```bash
 ffmpeg -version
 ```
-
 If the command is not recognized:
-
 - Install FFmpeg
 - Ensure FFmpeg is added to PATH
 - Restart your terminal
 
----
-
 ### Permission Errors
-
 Make sure you have:
-
 - Read access to source folders
 - Write access to output folders
 
----
-
-### High CPU Usage
-
-Video conversion is CPU intensive.
-
-MOV2MP4 automatically limits worker threads to avoid consuming all available system resources while maintaining fast performance.
+### Drag and Drop Not Working
+Ensure `tkinterdnd2` is correctly installed via `requirements.txt`. It is required for the OS-native drag-and-drop integration in the GUI.
 
 ---
 
-## 📈 Why Use MOV2MP4?
+## 📈 Why MOV2MP4?
 
-| Feature | MOV2MP4 |
-|----------|----------|
-| Batch Conversion | ✅ |
-| Recursive Scanning | ✅ |
-| Folder Preservation | ✅ |
-| GUI Support | ✅ |
-| CLI Support | ✅ |
-| Progress Tracking | ✅ |
-| Multithreading | ✅ |
-| Logging | ✅ |
-| Cross Platform | ✅ |
+MOV2MP4 is intentionally focused on one job:
+
+Convert MOV files to MP4 quickly, in batches, without unnecessary complexity.
+
+---
+
+## ⚙️ Tech Stack
+
+- Python
+- FFmpeg
+- CustomTkinter
+- tkinterdnd2
+- unittest
 
 ---
 
@@ -318,29 +294,12 @@ MOV2MP4 automatically limits worker threads to avoid consuming all available sys
 
 Contributions are welcome.
 
-To contribute:
-
 1. Fork the repository
 2. Create a new feature branch
 3. Commit your changes
 4. Push your branch
 5. Open a Pull Request
 
-Bug reports, feature requests, and improvements are always appreciated.
-
 ---
 
-## 🌟 Support
-
-If you find this project useful:
-
-- ⭐ Star the repository
-- 🍴 Fork the project
-- 🐛 Report bugs
-- 🚀 Suggest improvements
-
----
-
-<p align="center">
-Built with ❤️ using Python and FFmpeg
-</p>
+[GitHub Repository](https://github.com/MaybeSomeone-arc18/mov2mp4)

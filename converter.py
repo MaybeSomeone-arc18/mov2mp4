@@ -20,6 +20,7 @@ class ConversionResult:
     converted: int = 0
     skipped: int = 0
     failed: int = 0
+    cancelled: int = 0
 
 class VideoConverter:
     def __init__(self, 
@@ -38,6 +39,7 @@ class VideoConverter:
         self.output_dir = output_dir
         self.overwrite = overwrite
         self.lock = threading.Lock()
+        self.cancel_event = None
 
     def _get_output_path(self, input_path: Path, base_dir: Optional[Path] = None) -> Path:
         """
@@ -68,7 +70,7 @@ class VideoConverter:
         else:
             return input_path.with_suffix(".mp4")
 
-    def _convert_single(self, input_path: Path, output_path: Path, file_index: int, total_files: int) -> str:
+    def _convert_single(self, input_path: Path, output_path: Path, file_index: int, total_files: int, file_status_callback=None) -> str:
         """
         Process a single file: convert using FFmpeg, handle skipping and overwriting.
         
@@ -77,10 +79,14 @@ class VideoConverter:
             output_path (Path): Path to .mp4 file.
             file_index (int): The index of this file in the queue (for display).
             total_files (int): Total number of files.
+            file_status_callback (callable, optional): Callback for individual file status.
             
         Returns:
-            str: Status of the conversion ('skipped', 'converted', 'failed').
+            str: Status of the conversion ('skipped', 'converted', 'failed', 'cancelled').
         """
+        if self.cancel_event and self.cancel_event.is_set():
+            return "cancelled"
+
         filename = input_path.name
         header_msg = f"[{file_index}/{total_files}] Converting {filename}..."
         
@@ -90,6 +96,9 @@ class VideoConverter:
             print(header_msg)
             
         logger.info(f"Starting conversion: {input_path} -> {output_path}")
+        
+        if file_status_callback:
+            file_status_callback(input_path, "converting")
         
         if output_path.exists() and not self.overwrite:
             msg = "✗ Skipped (File exists)"
@@ -112,8 +121,36 @@ class VideoConverter:
         ]
         
         try:
-            result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            if result.returncode == 0:
+            # Use Popen to allow cancellation
+            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            
+            # Poll the process, waiting for it to finish or for cancel_event to be set
+            while proc.poll() is None:
+                if self.cancel_event and self.cancel_event.is_set():
+                    proc.terminate()
+                    proc.wait() # Ensure it's dead
+                    logger.info(f"Conversion cancelled for: {filename}")
+                    
+                    # Clean up partial output file if we cancelled
+                    if output_path.exists():
+                        try:
+                            output_path.unlink()
+                        except OSError:
+                            pass
+                            
+                    return "cancelled"
+                    
+                # Small wait to prevent busy looping
+                if self.cancel_event:
+                    self.cancel_event.wait(0.2)
+                else:
+                    try:
+                        proc.wait(timeout=0.2)
+                    except subprocess.TimeoutExpired:
+                        pass
+            
+            # Process finished naturally
+            if proc.returncode == 0:
                 msg = "✓ Completed"
                 logger.info(f"Successfully converted: {filename}")
                 
@@ -127,7 +164,8 @@ class VideoConverter:
                 status = "converted"
             else:
                 msg = "✗ Failed"
-                logger.error(f"FFmpeg failed for {filename}. Error: {result.stderr.strip()}")
+                stderr_output = proc.stderr.read().strip()
+                logger.error(f"FFmpeg failed for {filename}. Error: {stderr_output}")
                 status = "failed"
                 
         except Exception as e:
@@ -142,7 +180,7 @@ class VideoConverter:
             
         return status
 
-    def run(self, files: List[Path], base_dir: Path, progress_callback=None) -> ConversionResult:
+    def run(self, files: List[Path], base_dir: Path, progress_callback=None, file_status_callback=None) -> ConversionResult:
         """
         Execute the batch conversion process using multithreading.
         
@@ -151,6 +189,7 @@ class VideoConverter:
             base_dir (Path): The root directory, used to calculate relative output paths.
             progress_callback (callable, optional): A callback function called after each file completes, 
                                                     passing the current ConversionResult.
+            file_status_callback (callable, optional): A callback function called when a file's status changes.
             
         Returns:
             ConversionResult: The summary of the conversion process.
@@ -173,7 +212,7 @@ class VideoConverter:
             future_to_file = {}
             for i, file_path in enumerate(files, 1):
                 out_path = self._get_output_path(file_path, base_dir)
-                future = executor.submit(self._convert_single, file_path, out_path, i, result.total_found)
+                future = executor.submit(self._convert_single, file_path, out_path, i, result.total_found, file_status_callback)
                 future_to_file[future] = file_path
 
             for future in as_completed(future_to_file):
@@ -185,6 +224,8 @@ class VideoConverter:
                             result.converted += 1
                         elif status == "skipped":
                             result.skipped += 1
+                        elif status == "cancelled":
+                            result.cancelled += 1
                         else:
                             result.failed += 1
                 except Exception as exc:
@@ -202,6 +243,9 @@ class VideoConverter:
                         from copy import copy
                         current_res = copy(result)
                     progress_callback(current_res)
+                
+                if file_status_callback:
+                    file_status_callback(file_path, status)
                     
         if pbar:
             pbar.close()

@@ -3,6 +3,9 @@ import sys
 import time
 from pathlib import Path
 
+import runtime
+runtime.setup_environment()
+
 from utils import check_ffmpeg_installed, find_mov_files
 from logger import setup_logger
 from converter import VideoConverter

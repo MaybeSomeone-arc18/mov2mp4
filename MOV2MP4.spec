@@ -1,11 +1,15 @@
 # -*- mode: python ; coding: utf-8 -*-
+from PyInstaller.utils.hooks import collect_data_files
+
+datas = []
+datas += collect_data_files('tkinterdnd2')
 
 
 a = Analysis(
     ['gui.py'],
     pathex=[],
-    binaries=[],
-    datas=[],
+    binaries=[('build_assets/bin/ffmpeg', 'bin')],
+    datas=datas,
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -19,16 +23,13 @@ pyz = PYZ(a.pure)
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    a.datas,
     [],
-    name='gui',
+    exclude_binaries=True,
+    name='MOV2MP4',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    upx_exclude=[],
-    runtime_tmpdir=None,
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
@@ -36,9 +37,18 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
 )
-app = BUNDLE(
+coll = COLLECT(
     exe,
-    name='gui.app',
+    a.binaries,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name='MOV2MP4',
+)
+app = BUNDLE(
+    coll,
+    name='MOV2MP4.app',
     icon=None,
     bundle_identifier=None,
 )

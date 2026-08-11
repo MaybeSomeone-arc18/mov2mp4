@@ -4,3 +4,17 @@ __pycache__/
 .pytest_cache/
 logs/
 .DS_Store
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# PyInstaller / Build artifacts
+build/
+dist/
+build_assets/
+*.dmg
+*.app
+*.zip

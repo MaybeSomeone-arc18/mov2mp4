@@ -33,12 +33,13 @@ class TestConverter(unittest.TestCase):
         
         self.assertEqual(out_path, out_dir / "sub" / "test.mp4")
 
-    @patch("subprocess.run")
-    def test_convert_single_success(self, mock_run):
+    @patch("subprocess.Popen")
+    def test_convert_single_success(self, mock_popen):
         # Setup mock for subprocess
         mock_process = MagicMock()
         mock_process.returncode = 0
-        mock_run.return_value = mock_process
+        mock_process.poll.return_value = 0
+        mock_popen.return_value = mock_process
         
         converter = VideoConverter()
         input_path = self.base_dir / "test.mov"
@@ -49,15 +50,16 @@ class TestConverter(unittest.TestCase):
         status = converter._convert_single(input_path, out_path, 1, 1)
         
         self.assertEqual(status, "converted")
-        mock_run.assert_called_once()
+        mock_popen.assert_called_once()
         
-    @patch("subprocess.run")
-    def test_convert_single_failure(self, mock_run):
+    @patch("subprocess.Popen")
+    def test_convert_single_failure(self, mock_popen):
         # Setup mock for subprocess
         mock_process = MagicMock()
         mock_process.returncode = 1
-        mock_process.stderr = "FFmpeg error"
-        mock_run.return_value = mock_process
+        mock_process.poll.return_value = 1
+        mock_process.stderr.read.return_value = "FFmpeg error"
+        mock_popen.return_value = mock_process
         
         converter = VideoConverter()
         input_path = self.base_dir / "test.mov"
@@ -80,11 +82,12 @@ class TestConverter(unittest.TestCase):
         status = converter._convert_single(input_path, out_path, 1, 1)
         self.assertEqual(status, "skipped")
 
-    @patch("subprocess.run")
-    def test_delete_original(self, mock_run):
+    @patch("subprocess.Popen")
+    def test_delete_original(self, mock_popen):
         mock_process = MagicMock()
         mock_process.returncode = 0
-        mock_run.return_value = mock_process
+        mock_process.poll.return_value = 0
+        mock_popen.return_value = mock_process
         
         converter = VideoConverter(delete_original=True)
         input_path = self.base_dir / "test.mov"
