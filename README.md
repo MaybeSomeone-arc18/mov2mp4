@@ -19,17 +19,41 @@ Whether you prefer the precision of a command-line interface or the simplicity o
 
 ### 🍎 macOS Apple Silicon
 
-Download the latest macOS preview release:
-**[MOV2MP4-macOS-arm64.dmg](https://github.com/MaybeSomeone-arc18/mov2mp4/releases/latest)**
+Download the latest macOS preview:
 
-> [!IMPORTANT]
-> This is currently an **unsigned and non-notarized** preview build. Windows support is coming separately.
->
-> **To launch the app for the first time:**
-> 1. Open the DMG.
-> 2. Drag `MOV2MP4` to your Applications folder.
-> 3. **Right-click** (or Control-click) `MOV2MP4` and choose **Open**.
-> 4. Confirm **Open** when macOS displays the developer verification warning.
+[**Download MOV2MP4 for macOS (Apple Silicon)**](https://github.com/MaybeSomeone-arc18/mov2mp4/releases/latest)
+
+Platform:
+- macOS
+- Apple Silicon / arm64
+- M1, M2, M3, M4 and newer Apple Silicon Macs
+
+*(Note: Windows support is being prepared separately and is not currently available as a public download.)*
+
+## ⚠️ macOS First-Launch Security Notice
+
+This preview build is currently unsigned and not notarized by Apple.
+
+Because of this, macOS may prevent MOV2MP4 from opening normally and display a message saying Apple cannot verify the app.
+
+This is a macOS Gatekeeper security restriction for unsigned preview builds. It does NOT mean MOV2MP4 requires Python or FFmpeg to be installed separately.
+
+### Standard Installation
+
+1. Download the DMG (`MOV2MP4-macOS-arm64.dmg`).
+2. Open the downloaded DMG.
+3. Drag **MOV2MP4** into your **Applications** folder.
+4. Open **Applications** and try launching **MOV2MP4** normally.
+5. If macOS shows a security prompt, Control-click (or right-click) **MOV2MP4** and select **Open**.
+
+### ⚠️ If macOS blocks MOV2MP4
+
+If macOS continues to block MOV2MP4 from opening, use the included **Launch MOV2MP4** launcher fallback:
+
+1. Double-click **Launch MOV2MP4** (`Launch MOV2MP4.command`).
+2. The launcher handles the macOS quarantine attribute for `/Applications/MOV2MP4.app` and launches the application for you.
+
+*(Note: The launcher only removes the quarantine attribute from `/Applications/MOV2MP4.app`. It does not disable Gatekeeper globally or alter system-wide security settings.)*
 
 ---
 

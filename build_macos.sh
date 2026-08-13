@@ -28,12 +28,17 @@ echo "License Configuration:"
 build_assets/bin/ffmpeg -L | grep -i "GPL" || echo "GPL string not found in -L"
 echo "==========================================="
 
-# Install PyInstaller
-pip install pyinstaller
+# Use PyInstaller from .venv if available to avoid system environment package conflicts
+PYINSTALLER_BIN="pyinstaller"
+if [ -f ".venv/bin/pyinstaller" ]; then
+    PYINSTALLER_BIN=".venv/bin/pyinstaller"
+else
+    pip install pyinstaller
+fi
 
 # Build the application
 echo "Running PyInstaller..."
-pyinstaller --noconfirm \
+"$PYINSTALLER_BIN" --noconfirm \
     --name "MOV2MP4" \
     --onedir \
     --windowed \
@@ -45,23 +50,29 @@ echo "Build complete: dist/MOV2MP4.app"
 
 # Verify execution structure
 if [ -d "dist/MOV2MP4.app" ]; then
-    echo "Creating DMG..."
-    # We create the DMG inside dist/
+    echo "Preparing DMG staging folder..."
+    rm -rf dist/dmg_stage
+    mkdir -p dist/dmg_stage
+    cp -R dist/MOV2MP4.app dist/dmg_stage/
+    cp "Launch MOV2MP4.command" dist/dmg_stage/
+    chmod +x "dist/dmg_stage/Launch MOV2MP4.command"
+    ln -s /Applications dist/dmg_stage/Applications
+
     cd dist
-    
-    # If create-dmg fails (sometimes it complains about disk images), we fall back to hdiutil
+    echo "Creating DMG..."
     create-dmg \
       --volname "MOV2MP4 Installer" \
       --window-pos 200 120 \
       --window-size 600 400 \
       --icon-size 100 \
-      --icon "MOV2MP4.app" 175 120 \
+      --icon "MOV2MP4.app" 140 120 \
+      --app-drop-link 300 120 \
+      --icon "Launch MOV2MP4.command" 460 120 \
       --hide-extension "MOV2MP4.app" \
-      --app-drop-link 425 120 \
       "MOV2MP4.dmg" \
-      "MOV2MP4.app" || {
+      "dmg_stage" || {
           echo "create-dmg failed, falling back to hdiutil..."
-          hdiutil create -volname "MOV2MP4" -srcfolder MOV2MP4.app -ov -format UDZO MOV2MP4.dmg
+          hdiutil create -volname "MOV2MP4" -srcfolder dmg_stage -ov -format UDZO MOV2MP4.dmg
       }
       
     echo "Packaging complete: dist/MOV2MP4.dmg"
