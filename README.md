@@ -10,13 +10,13 @@ Made for editors, creators, and anyone who wants their videos converted without 
 
 ### Windows
 
-[**Download MOV2MP4 for Windows (x64)**](https://github.com/MaybeSomeone-arc18/mov2mp4/releases/latest)
+[**Download MOV2MP4 for Windows (x64)**](https://github.com/MaybeSomeone-arc18/mov2mp4/releases/tag/v0.1.0-windows)
 
 *Works on Windows 10 and 11 (64-bit).*
 
 ### macOS
 
-[**Download MOV2MP4 for Mac (Apple Silicon)**](https://github.com/MaybeSomeone-arc18/mov2mp4/releases/latest)
+[**Download MOV2MP4 for Mac (Apple Silicon)**](https://github.com/MaybeSomeone-arc18/mov2mp4/releases/tag/v0.1.0-macos)
 
 *Works on Apple Silicon Macs: M1, M2, M3, M4 and newer.*
 
