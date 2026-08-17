@@ -1,8 +1,8 @@
 # 🎬 MOV2MP4
 
-> A simple batch MOV → MP4 converter for video creators and editors.
+> Turn MOV files into MP4 locally on your Mac—fast, private, and simple.
 
-MOV2MP4 converts `.mov` files to `.mp4` format locally on your computer. Drop your files in, choose where they go, and convert whole queues of video files without cloud uploads, file limits, or extra complexity.
+Made for editors, creators, and anyone who wants their videos converted without dealing with file limits, cloud uploads, or complicated settings.
 
 ---
 
@@ -12,46 +12,52 @@ MOV2MP4 converts `.mov` files to `.mp4` format locally on your computer. Drop yo
 
 [**Download MOV2MP4 for Mac (Apple Silicon)**](https://github.com/MaybeSomeone-arc18/mov2mp4/releases/latest)
 
-*For Apple Silicon Macs (M1, M2, M3, M4 and newer).*
+*Works on Apple Silicon Macs: M1, M2, M3, M4 and newer.*
 
 > Windows version coming soon.
 
 ---
 
-## 🚀 Get started
+## 🚀 First Time Setup
 
-1. **Download** `MOV2MP4-macOS-arm64.dmg`.
-2. **Drag** **MOV2MP4** into your **Applications** folder.
-3. **Open** MOV2MP4.
+macOS is going to make the first launch slightly annoying.
+
+I haven't paid for Apple's developer program yet, so macOS will probably complain that it can't verify the app. Don't worry—the app is completely fine, and you don't need to install Python, FFmpeg, Homebrew, or anything else.
+
+### 1. Download & open the DMG
+Download **`MOV2MP4-macOS-arm64.dmg`** and double-click to open it.
+
+### 2. Move MOV2MP4 to Applications
+Drag the **MOV2MP4** app into your **Applications** folder.
+
+### 3. Open MOV2MP4
+Go to **Applications → MOV2MP4** and double-click it. If it opens, you're all set! 🎉
 
 ---
 
-## ⚠️ First launch on macOS
+## ⚠️ If macOS Blocks the App
 
-Because MOV2MP4 is an early preview build and is not notarized by Apple yet, macOS may ask you to approve it the first time you open it.
+If macOS displays a message saying it can't open or verify MOV2MP4:
 
-### If macOS gives you an "Open Anyway" option
-Choose **Open Anyway → Open**.
-
-### If macOS only shows "Move to Trash" or "Done"
 1. Open **System Settings**.
 2. Go to **Privacy & Security**.
-3. Scroll down to the **Security** section.
-4. Click **Open Anyway** next to MOV2MP4.
-5. Confirm by clicking **Open**.
+3. Scroll down until you see the message about MOV2MP4 being blocked.
+4. Click **Open Anyway** → then click **Open**.
+5. Open **MOV2MP4** again.
 
-### Additional Fallback — Launch MOV2MP4 Launcher
-If the normal app launch still does not work after the macOS approval flow, use the included **`Launch MOV2MP4.command`** helper inside the DMG:
-1. Right-click (or Control-click) `Launch MOV2MP4.command`.
-2. Select **Open**.
-3. Confirm by clicking **Open**.
+### Still not opening?
 
-*(If macOS blocks the launcher too, repeat the **System Settings → Privacy & Security → Open Anyway** approval for the launcher.)*
+There is a small helper included inside the downloaded DMG called **`Launch MOV2MP4`**.
 
-### Advanced troubleshooting
-*(Optional — for technical users only)*
+1. Open the original DMG again.
+2. Double-click **`Launch MOV2MP4.command`**.
+3. If macOS blocks the launcher too, go back to **System Settings → Privacy & Security → Open Anyway** and then open the launcher again.
 
-To clear the macOS download restriction manually via Terminal:
+The launcher will clear the macOS security restriction and start MOV2MP4 for you. You only have to do this once.
+
+### Advanced troubleshooting (Optional)
+
+If you're comfortable with Terminal, you can clear the download restriction directly:
 
 ```bash
 xattr -dr com.apple.quarantine "/Applications/MOV2MP4.app"
@@ -59,56 +65,29 @@ xattr -dr com.apple.quarantine "/Applications/MOV2MP4.app"
 
 ---
 
-## ✨ Features
+## 🎬 Using MOV2MP4
 
-- **Drag & Drop** — Drop MOV files or entire folder trees directly into the window.
-- **Batch Processing** — Convert multiple videos simultaneously with multithreaded performance.
-- **Folder Preservation** — Automatically preserves original nested directory structures.
-- **Local & Private** — 100% offline conversion powered by an embedded FFmpeg engine.
-- **Full Control** — Optional auto-overwrite and post-conversion source deletion.
-- **Safe Cancellation** — Stop active batch conversions gracefully at any time.
+Once the app opens:
 
----
+1. **Add your videos** — Drag your `.mov` files or folders directly into the app. You can add multiple files at once.
+2. **Choose where your MP4s go** — Click **Browse Folder** to select where you want your converted videos saved.
+3. **Convert** — Click **Start Conversion**.
 
-## 💻 Usage
+Your MOV files stay on your Mac. Nothing is ever uploaded anywhere.
 
-### Desktop Application
-1. Add MOV files by dragging them into the drop zone or clicking **Browse Files** / **Browse Folder**.
-2. Choose your output folder.
-3. Configure optional settings *(Overwrite existing files / Delete originals after conversion)*.
-4. Click **Start Conversion**.
+### Useful Options
 
-### Command Line Interface (CLI)
-
-```bash
-# Convert a folder
-python convert.py ./videos
-
-# Choose an output folder
-python convert.py ./videos --output ./converted
-
-# Overwrite existing MP4 files
-python convert.py ./videos --overwrite
-
-# Delete original MOV files after successful conversion
-python convert.py ./videos --delete-original
-```
-
-**Available flags:**
-- `--output` — Custom output directory
-- `--overwrite` — Overwrite existing MP4 files
-- `--delete-original` — Delete source MOV files after successful conversion
-- `--verbose` — Enable detailed debug logs
+- **Batch conversion** — Convert queues of multiple videos at once.
+- **Output Destination** — Save converted MP4s anywhere you choose.
+- **Overwrite existing files** — Re-convert and overwrite existing MP4 files if needed.
+- **Delete Original** — Automatically remove source MOV files after successful conversion. *(Be careful with this setting! Only turn it on if you actually want the original MOV files removed.)*
+- **Cancel anytime** — Stop active conversions safely without corrupting files.
 
 ---
 
-## 🏗️ Architecture & Development
+## 🛠️ For Developers & Power Users
 
-MOV2MP4 shares a unified multithreaded Conversion Engine across both the Desktop GUI and CLI.
-
-```text
-  GUI / CLI  ──►  Conversion Engine  ──►  FFmpeg  ──►  MP4 Output
-```
+MOV2MP4 runs on a unified multithreaded Python conversion engine powered by an embedded FFmpeg binary.
 
 ### Local Setup & Testing
 
@@ -122,7 +101,10 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# Run automated unit tests
+# Run CLI
+python convert.py ./videos --output ./converted
+
+# Run unit tests
 python3 -m unittest discover tests
 
 # Build macOS DMG
