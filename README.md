@@ -1,8 +1,8 @@
 # 🎬 MOV2MP4
 
-> A simple, fast batch MOV → MP4 converter for video creators and editors.
+> A simple batch MOV → MP4 converter for video creators and editors.
 
-MOV2MP4 converts `.mov` files to `.mp4` format locally on your computer. Drop your files in, choose where they go, and convert whole queues of video files in seconds—without cloud uploads, file limits, or extra complexity.
+MOV2MP4 converts `.mov` files to `.mp4` format locally on your computer. Drop your files in, choose where they go, and convert whole queues of video files without cloud uploads, file limits, or extra complexity.
 
 ---
 
@@ -81,15 +81,24 @@ xattr -dr com.apple.quarantine "/Applications/MOV2MP4.app"
 ### Command Line Interface (CLI)
 
 ```bash
-# Convert all MOV files in a folder
+# Convert a folder
+python convert.py ./videos
+
+# Choose an output folder
 python convert.py ./videos --output ./converted
 
-# Options
---output            Custom output directory
---overwrite         Overwrite existing MP4 files
---delete-original   Delete source MOV files after successful conversion
---verbose           Enable detailed debug logs
+# Overwrite existing MP4 files
+python convert.py ./videos --overwrite
+
+# Delete original MOV files after successful conversion
+python convert.py ./videos --delete-original
 ```
+
+**Available flags:**
+- `--output` — Custom output directory
+- `--overwrite` — Overwrite existing MP4 files
+- `--delete-original` — Delete source MOV files after successful conversion
+- `--verbose` — Enable detailed debug logs
 
 ---
 
