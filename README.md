@@ -15,45 +15,83 @@ Whether you prefer the precision of a command-line interface or the simplicity o
 
 ---
 
-## 📥 Download
+## 📥 Download & Installation
 
-### 🍎 macOS Apple Silicon
+### 🍎 macOS
 
-Download the latest macOS preview:
+#### Download
 
 [**Download MOV2MP4 for macOS (Apple Silicon)**](https://github.com/MaybeSomeone-arc18/mov2mp4/releases/latest)
 
-Platform:
-- macOS
-- Apple Silicon / arm64
-- M1, M2, M3, M4 and newer Apple Silicon Macs
+This version is for Apple Silicon Macs: M1, M2, M3, M4 and newer.
 
 *(Note: Windows support is being prepared separately and is not currently available as a public download.)*
 
-## ⚠️ macOS First-Launch Security Notice
+#### Install
 
-This preview build is currently unsigned and not notarized by Apple.
+1. Open the downloaded DMG (`MOV2MP4-macOS-arm64.dmg`).
+2. Drag **MOV2MP4** into your **Applications** folder.
+3. Open **Applications**.
+4. Double-click **MOV2MP4**.
 
-Because of this, macOS may prevent MOV2MP4 from opening normally and display a message saying Apple cannot verify the app.
+---
 
-This is a macOS Gatekeeper security restriction for unsigned preview builds. It does NOT mean MOV2MP4 requires Python or FFmpeg to be installed separately.
+## ⚠️ First launch on macOS
 
-### Standard Installation
+MOV2MP4 is currently an early preview and is not signed/notarized by Apple yet.
 
-1. Download the DMG (`MOV2MP4-macOS-arm64.dmg`).
-2. Open the downloaded DMG.
-3. Drag **MOV2MP4** into your **Applications** folder.
-4. Open **Applications** and try launching **MOV2MP4** normally.
-5. If macOS shows a security prompt, Control-click (or right-click) **MOV2MP4** and select **Open**.
+Because of this, macOS may block the first launch.
 
-### ⚠️ If macOS blocks MOV2MP4
+### If macOS gives you an "Open Anyway" option
 
-If macOS continues to block MOV2MP4 from opening, use the included **Launch MOV2MP4** launcher fallback:
+Choose:
 
-1. Double-click **Launch MOV2MP4** (`Launch MOV2MP4.command`).
-2. The launcher handles the macOS quarantine attribute for `/Applications/MOV2MP4.app` and launches the application for you.
+**Open Anyway → Open**
 
-*(Note: The launcher only removes the quarantine attribute from `/Applications/MOV2MP4.app`. It does not disable Gatekeeper globally or alter system-wide security settings.)*
+MOV2MP4 should launch normally.
+
+### If macOS only shows "Move to Trash" or "Done"
+
+Don't delete MOV2MP4.
+
+Instead:
+
+1. Open **System Settings**.
+2. Go to **Privacy & Security**.
+3. Scroll down to the **Security** section.
+4. Look for a message saying that MOV2MP4 was prevented from opening.
+5. Click **Open Anyway**.
+6. Confirm by clicking **Open**.
+7. MOV2MP4 should now launch.
+
+This is the recommended way to approve the preview app on macOS.
+
+---
+
+### Additional Fallback — Launch MOV2MP4 Launcher
+
+If the normal app launch still does not work after the macOS approval flow, use the included **`Launch MOV2MP4.command`** launcher:
+
+1. Go back to the downloaded MOV2MP4 DMG.
+2. Find **`Launch MOV2MP4.command`**.
+3. Right-click (or Control-click) it.
+4. Select **Open**.
+5. If macOS asks for confirmation, select **Open**.
+6. The launcher will clear the quarantine restriction for MOV2MP4 and launch the application.
+
+*(Note: The launcher itself may also be subject to macOS security checks. If macOS blocks the launcher, follow the same **System Settings → Privacy & Security → Open Anyway** approval process for the launcher.)*
+
+---
+
+### Advanced troubleshooting
+
+Only use this if the normal macOS approval and launcher options do not work.
+
+Open Terminal and run:
+
+```bash
+xattr -dr com.apple.quarantine "/Applications/MOV2MP4.app"
+```
 
 ---
 
