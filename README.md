@@ -96,7 +96,7 @@ Once the app opens:
 2. **Choose where your MP4s go** — Click **Browse Folder** to select where you want your converted videos saved.
 3. **Convert** — Click **Start Conversion**.
 
-Your MOV files stay on your Mac. Nothing is ever uploaded anywhere.
+Your MOV files stay on your computer. Nothing is ever uploaded anywhere.
 
 ### Useful Options
 

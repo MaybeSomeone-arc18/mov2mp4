@@ -123,5 +123,3 @@ This is still a preview release.
 If something feels weird, breaks, or you have an idea that would make it better, tell me.
 
 I'd genuinely rather know about it.
-
-Windows version is coming separately.
