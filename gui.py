@@ -13,7 +13,7 @@ runtime.setup_environment()
 
 from utils import check_ffmpeg_installed, find_mov_files
 from converter import VideoConverter, ConversionResult
-from logger import setup_logger
+from logger import setup_logger, get_default_log_dir
 
 THEME = {
     "bg": "#111214",
@@ -53,7 +53,7 @@ class Mov2Mp4App(TkinterDnD_CTk):
         self.geometry("900x650")
         self.configure(fg_color=THEME["bg"])
         
-        log_dir = Path.cwd() / "logs"
+        log_dir = get_default_log_dir()
         self.logger = setup_logger(log_dir, verbose=False)
         
         # Windows native taskbar grouping and window icon

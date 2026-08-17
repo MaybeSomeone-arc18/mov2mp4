@@ -7,7 +7,7 @@ import runtime
 runtime.setup_environment()
 
 from utils import check_ffmpeg_installed, find_mov_files
-from logger import setup_logger
+from logger import setup_logger, get_default_log_dir
 from converter import VideoConverter
 
 def parse_args():
@@ -50,7 +50,7 @@ def main():
     # 1. Setup Logger
     # Determine the directory where logs will be stored.
     # We can store logs in the current working directory under "logs"
-    log_dir = Path.cwd() / "logs"
+    log_dir = get_default_log_dir()
     logger = setup_logger(log_dir, args.verbose)
     
     logger.info("Starting MOV2MP4 Converter")
