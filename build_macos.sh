@@ -42,6 +42,7 @@ echo "Running PyInstaller..."
     --name "MOV2MP4" \
     --onedir \
     --windowed \
+    --icon "assets/icon.icns" \
     --add-binary "build_assets/bin/ffmpeg:bin" \
     --collect-data tkinterdnd2 \
     gui.py
