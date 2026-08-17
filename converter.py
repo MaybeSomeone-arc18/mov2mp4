@@ -24,11 +24,17 @@ class ConversionResult:
 
 def _safe_print(msg: str):
     try:
-        print(msg)
+        if tqdm:
+            tqdm.write(msg)
+        else:
+            print(msg)
     except UnicodeEncodeError:
         safe_msg = msg.replace("✓", "[OK]").replace("✗", "[X]")
         try:
-            print(safe_msg)
+            if tqdm:
+                tqdm.write(safe_msg)
+            else:
+                print(safe_msg)
         except Exception:
             pass
 
@@ -100,11 +106,8 @@ class VideoConverter:
         filename = input_path.name
         header_msg = f"[{file_index}/{total_files}] Converting {filename}..."
         
-        if tqdm:
-            tqdm.write(header_msg)
-        else:
-            _safe_print(header_msg)
-            
+        _safe_print(header_msg)
+
         logger.info(f"Starting conversion: {input_path} -> {output_path}")
         
         if file_status_callback:
@@ -112,10 +115,7 @@ class VideoConverter:
         
         if output_path.exists() and not self.overwrite:
             msg = "✗ Skipped (File exists)"
-            if tqdm:
-                tqdm.write(msg + "\n")
-            else:
-                _safe_print(msg + "\n")
+            _safe_print(msg + "\n")
             logger.info(f"Skipped {input_path} (Output file already exists)")
             return "skipped"
 
@@ -183,10 +183,7 @@ class VideoConverter:
             logger.error(f"Exception during conversion of {filename}: {str(e)}")
             status = "failed"
 
-        if tqdm:
-            tqdm.write(msg + "\n")
-        else:
-            _safe_print(msg + "\n")
+        _safe_print(msg + "\n")
             
         return status
 

@@ -55,8 +55,9 @@ if errorlevel 1 (
     exit /b 1
 )
 
-:: Install PyInstaller if not present
-pip install pyinstaller
+:: Install PyInstaller and requirements if not present
+py -m pip install pyinstaller
+py -m pip install -r requirements.txt
 
 :: 6 & 7. Build ONEDIR application using MOV2MP4.spec (includes assets\icon.ico)
 echo Running PyInstaller with MOV2MP4.spec...

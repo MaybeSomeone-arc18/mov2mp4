@@ -6,7 +6,15 @@ from PyInstaller.utils.hooks import collect_data_files
 is_win = sys.platform.startswith('win')
 
 datas = []
-datas += collect_data_files('tkinterdnd2')
+hiddenimports = []
+
+for pkg in ['customtkinter', 'tkinterdnd2', 'PIL', 'tqdm', 'darkdetect']:
+    try:
+        datas += collect_data_files(pkg)
+        hiddenimports += collect_submodules(pkg)
+    except Exception:
+        pass
+
 if os.path.exists('assets'):
     datas.append(('assets', 'assets'))
 
@@ -22,7 +30,7 @@ a = Analysis(
     pathex=[],
     binaries=[ffmpeg_binary],
     datas=datas,
-    hiddenimports=[],
+    hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
