@@ -1,6 +1,6 @@
 # 🎬 MOV2MP4
 
-> Turn MOV files into MP4 locally on your Mac—fast, private, and simple.
+> Turn MOV files into MP4 locally on your Mac or Windows PC—fast, private, and simple.
 
 Made for editors, creators, and anyone who wants their videos converted without dealing with file limits, cloud uploads, or complicated settings.
 
@@ -8,17 +8,40 @@ Made for editors, creators, and anyone who wants their videos converted without 
 
 ## 📥 Download
 
+### Windows
+
+[**Download MOV2MP4 for Windows (x64)**](https://github.com/MaybeSomeone-arc18/mov2mp4/releases/latest)
+
+*Works on Windows 10 and 11 (64-bit).*
+
 ### macOS
 
 [**Download MOV2MP4 for Mac (Apple Silicon)**](https://github.com/MaybeSomeone-arc18/mov2mp4/releases/latest)
 
 *Works on Apple Silicon Macs: M1, M2, M3, M4 and newer.*
 
-> Windows version coming soon.
-
 ---
 
 ## 🚀 First Time Setup
+
+### Windows
+
+You don't need to install Python, FFmpeg, Command Prompt/PowerShell tools, or pip packages. Everything is bundled into a single installer.
+
+1. **Download the installer** — Download **`MOV2MP4-Setup.exe`**.
+2. **Run the installer** — Double-click **`MOV2MP4-Setup.exe`** and follow the steps.
+3. **Open MOV2MP4** — Open **MOV2MP4** from your **Start Menu** or **Desktop** shortcut.
+
+#### ⚠️ If Windows Blocks the Installer
+
+Because this is an unsigned project, Windows Defender SmartScreen might show a warning ("Unknown publisher"):
+
+1. Click **More info**.
+2. Click **Run anyway**.
+
+---
+
+### macOS
 
 macOS is going to make the first launch slightly annoying.
 

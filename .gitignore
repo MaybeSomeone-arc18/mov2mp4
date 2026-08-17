@@ -18,3 +18,4 @@ build_assets/
 *.dmg
 *.app
 *.zip
+*.exe

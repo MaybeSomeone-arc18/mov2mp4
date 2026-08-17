@@ -4,6 +4,7 @@ from tkinter import filedialog, messagebox
 import threading
 from pathlib import Path
 import os
+import sys
 import math
 import re
 
@@ -55,6 +56,24 @@ class Mov2Mp4App(TkinterDnD_CTk):
         log_dir = Path.cwd() / "logs"
         self.logger = setup_logger(log_dir, verbose=False)
         
+        # Windows native taskbar grouping and window icon
+        if sys.platform.startswith("win"):
+            try:
+                import ctypes
+                myappid = "mov2mp4.desktop.app.1.0"
+                ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+            except Exception:
+                pass
+            icon_ico = Path(__file__).parent / "assets" / "icon.ico"
+            if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+                icon_ico = Path(sys._MEIPASS) / "assets" / "icon.ico"
+
+            if icon_ico.exists():
+                try:
+                    self.iconbitmap(str(icon_ico))
+                except Exception as e:
+                    self.logger.warning(f"Could not set window icon: {e}")
+
         # State
         self.file_queue = []  # List of dicts: {"path": Path, "size": int, "status": str}
         self.output_folder = None # None means save next to original

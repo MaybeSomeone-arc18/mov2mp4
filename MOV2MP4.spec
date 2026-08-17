@@ -1,14 +1,26 @@
 # -*- mode: python ; coding: utf-8 -*-
+import sys
+import os
 from PyInstaller.utils.hooks import collect_data_files
+
+is_win = sys.platform.startswith('win')
 
 datas = []
 datas += collect_data_files('tkinterdnd2')
+if os.path.exists('assets'):
+    datas.append(('assets', 'assets'))
 
+if is_win:
+    ffmpeg_binary = ('build_assets/bin/ffmpeg.exe', 'bin')
+    icon_path = 'assets/icon.ico'
+else:
+    ffmpeg_binary = ('build_assets/bin/ffmpeg', 'bin')
+    icon_path = 'assets/icon.icns'
 
 a = Analysis(
     ['gui.py'],
     pathex=[],
-    binaries=[('build_assets/bin/ffmpeg', 'bin')],
+    binaries=[ffmpeg_binary],
     datas=datas,
     hiddenimports=[],
     hookspath=[],
@@ -36,8 +48,9 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['assets/icon.icns'],
+    icon=icon_path,
 )
+
 coll = COLLECT(
     exe,
     a.binaries,
@@ -47,9 +60,11 @@ coll = COLLECT(
     upx_exclude=[],
     name='MOV2MP4',
 )
-app = BUNDLE(
-    coll,
-    name='MOV2MP4.app',
-    icon='assets/icon.icns',
-    bundle_identifier=None,
-)
+
+if not is_win:
+    app = BUNDLE(
+        coll,
+        name='MOV2MP4.app',
+        icon=icon_path,
+        bundle_identifier=None,
+    )
