@@ -499,5 +499,33 @@ class Mov2Mp4App(TkinterDnD_CTk):
         self.progress_bar.grid_remove()
 
 if __name__ == "__main__":
-    app = Mov2Mp4App()
-    app.mainloop()
+    import sys
+    if "--headless-test" in sys.argv:
+        try:
+            folder_idx = sys.argv.index("--headless-test") + 1
+            folder = sys.argv[folder_idx]
+            import runtime
+            runtime.setup_environment()
+            from converter import VideoConverter
+            from utils import find_mov_files
+            from pathlib import Path
+            import threading
+            folder_path = Path(folder)
+            files = find_mov_files(folder_path)
+            if not files:
+                print("No MOV files found.")
+                sys.exit(2)
+            converter = VideoConverter()
+            converter.cancel_event = threading.Event()
+            result = converter.run(files, folder_path)
+            if result.failed > 0 or result.converted == 0:
+                print(f"Conversion failed: {result.failed} failed, {result.converted} converted.")
+                sys.exit(1)
+            print("Conversion succeeded.")
+            sys.exit(0)
+        except Exception as e:
+            print("Headless error:", e)
+            sys.exit(1)
+    else:
+        app = Mov2Mp4App()
+        app.mainloop()

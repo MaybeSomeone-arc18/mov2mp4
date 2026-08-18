@@ -41,11 +41,12 @@ class TestConverter(unittest.TestCase):
         mock_process.poll.return_value = 0
         mock_popen.return_value = mock_process
         
-        converter = VideoConverter()
+        converter = VideoConverter(overwrite=True)
         input_path = self.base_dir / "test.mov"
         input_path.touch()
         
         out_path = self.base_dir / "test.mp4"
+        out_path.write_text("data")
         
         status = converter._convert_single(input_path, out_path, 1, 1)
         
@@ -89,16 +90,54 @@ class TestConverter(unittest.TestCase):
         mock_process.poll.return_value = 0
         mock_popen.return_value = mock_process
         
-        converter = VideoConverter(delete_original=True)
+        converter = VideoConverter(delete_original=True, overwrite=True)
         input_path = self.base_dir / "test.mov"
         input_path.touch()
         out_path = self.base_dir / "test.mp4"
+        out_path.write_text("data")
         
         self.assertTrue(input_path.exists())
         
         converter._convert_single(input_path, out_path, 1, 1)
         
         self.assertFalse(input_path.exists())
+
+    @patch("subprocess.Popen")
+    def test_delete_original_missing_output(self, mock_popen):
+        mock_process = MagicMock()
+        mock_process.returncode = 0
+        mock_process.poll.return_value = 0
+        mock_popen.return_value = mock_process
+
+        converter = VideoConverter(delete_original=True)
+        input_path = self.base_dir / "test.mov"
+        input_path.touch()
+        out_path = self.base_dir / "test.mp4"
+
+        self.assertTrue(input_path.exists())
+        status = converter._convert_single(input_path, out_path, 1, 1)
+
+        self.assertEqual(status, "failed")
+        self.assertTrue(input_path.exists())
+
+    @patch("subprocess.Popen")
+    def test_delete_original_zero_byte_output(self, mock_popen):
+        mock_process = MagicMock()
+        mock_process.returncode = 0
+        mock_process.poll.return_value = 0
+        mock_popen.return_value = mock_process
+
+        converter = VideoConverter(delete_original=True, overwrite=True)
+        input_path = self.base_dir / "test.mov"
+        input_path.touch()
+        out_path = self.base_dir / "test.mp4"
+        out_path.touch() # Create existing but empty file
+
+        self.assertTrue(input_path.exists())
+        status = converter._convert_single(input_path, out_path, 1, 1)
+
+        self.assertEqual(status, "failed")
+        self.assertTrue(input_path.exists())
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: Build Windows Executable
+        run: cmd /c build_windows.bat
+        
+      - name: Run unit tests
+        run: python -m unittest discover tests
+        
+      - name: Verify build artifacts exist
+        run: |
+          if (!(Test-Path "dist\MOV2MP4\MOV2MP4.exe")) { throw "MOV2MP4.exe not found" }
+          if (!(Test-Path "dist\MOV2MP4-Setup.exe")) { throw "MOV2MP4-Setup.exe not found" }
+          
+      - name: Verify bundled FFmpeg exists
+        run: |
+          $ffmpegPath = "dist\MOV2MP4\_internal\bin\ffmpeg.exe"
+          if (!(Test-Path $ffmpegPath)) {
+            $ffmpegPath = "dist\MOV2MP4\bin\ffmpeg.exe"
+          }
+          if (!(Test-Path $ffmpegPath)) { throw "ffmpeg.exe not found in bundle" }
+          Add-Content -Path $env:GITHUB_ENV -Value "FFMPEG_BUNDLED=$ffmpegPath"
+          
+      - name: Verify bundled FFmpeg executes
+        run: |
+          & ${{ env.FFMPEG_BUNDLED }} -version
+
+      - name: Verify application conversion logic
+        run: |
+          # Generate a 1-second dummy .mov using the bundled ffmpeg
+          mkdir dummy_test
+          & ${{ env.FFMPEG_BUNDLED }} -f lavfi -i testsrc=duration=1:size=640x360:rate=30 -vcodec qtrle dummy_test/test.mov
+          
+          # Temporarily override PATH to prioritize the bundled bin folder
+          $binDir = Split-Path -Parent ${{ env.FFMPEG_BUNDLED }}
+          $env:PATH = "$((Resolve-Path $binDir).Path);$env:PATH"
+          
+          # Run convert.py to verify application logic interacts correctly with bundled FFmpeg
+          python convert.py dummy_test
+          
+          if (!(Test-Path "dummy_test/test.mp4")) { throw "Conversion failed: test.mp4 not produced" }
+          
+      - name: Upload Windows Installer Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MOV2MP4-Windows-Installer
+          path: dist\MOV2MP4-Setup.exe
+
+  build-and-test-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: Run unit tests
+        run: python -m unittest discover tests
+        
+      - name: Build macOS Application
+        run: bash build_macos.sh
+        
+      - name: Upload macOS DMG Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MOV2MP4-macOS-Installer
+          path: dist/*.dmg

@@ -161,17 +161,22 @@ class VideoConverter:
             
             # Process finished naturally
             if proc.returncode == 0:
-                msg = "✓ Completed"
-                logger.info(f"Successfully converted: {filename}")
-                
-                if self.delete_original:
-                    try:
-                        input_path.unlink()
-                        logger.info(f"Deleted original file: {input_path}")
-                    except OSError as e:
-                        logger.error(f"Failed to delete original file {input_path}: {e}")
-                        
-                status = "converted"
+                if not output_path.exists() or output_path.stat().st_size == 0:
+                    msg = "✗ Failed"
+                    logger.error(f"FFmpeg returned 0, but output file is missing or empty for {filename}.")
+                    status = "failed"
+                else:
+                    msg = "✓ Completed"
+                    logger.info(f"Successfully converted: {filename}")
+
+                    if self.delete_original:
+                        try:
+                            input_path.unlink()
+                            logger.info(f"Deleted original file: {input_path}")
+                        except OSError as e:
+                            logger.error(f"Failed to delete original file {input_path}: {e}")
+
+                    status = "converted"
             else:
                 msg = "✗ Failed"
                 stderr_output = proc.stderr.read().strip()
