@@ -12,8 +12,8 @@ if exist build_assets rmdir /s /q build_assets
 :: 2. Prepare build_assets
 mkdir build_assets\bin
 
-:: 3. Download ONLY the pinned BtbN FFmpeg build
-set "FFMPEG_URL=https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-08-10-13-17/ffmpeg-N-126039-g6bbc22dc09-win64-gpl.zip"
+:: 3. Download the latest BtbN FFmpeg build
+set "FFMPEG_URL=https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip"
 
 echo Downloading pinned FFmpeg build from BtbN...
 echo URL: !FFMPEG_URL!
@@ -38,7 +38,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-move build_assets\bin_temp\ffmpeg-N-126039-g6bbc22dc09-win64-gpl\bin\ffmpeg.exe build_assets\bin\ >nul
+move build_assets\bin_temp\ffmpeg-master-latest-win64-gpl\bin\ffmpeg.exe build_assets\bin\ >nul
 rmdir /s /q build_assets\bin_temp
 del ffmpeg.zip
 
