@@ -4,6 +4,8 @@ Turn MOV files into MP4 locally on your Mac or Windows PC—fast, private, and s
 
 Made for editors, creators, and anyone who wants their videos converted without dealing with file limits, cloud uploads, or complicated settings.
 
+![MOV2MP4 Interface](assets/screenshot.png)
+
 ---
 
 ## Download
