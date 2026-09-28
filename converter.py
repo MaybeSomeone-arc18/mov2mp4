@@ -2,6 +2,7 @@ import subprocess
 import logging
 import os
 import threading
+import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
@@ -119,6 +120,11 @@ class VideoConverter:
             logger.info(f"Skipped {input_path} (Output file already exists)")
             return "skipped"
 
+        # Write beside the destination so os.replace stays on the same filesystem.
+        # A force-kill may leave this unique .partial.mp4, but never truncates
+        # the existing final file. ffmpeg needs an .mp4 suffix for its muxer.
+        temp_path = output_path.with_name(f".{output_path.stem}.{uuid.uuid4().hex}.partial.mp4")
+
         # Construct FFmpeg command
         # -y : overwrite output files (we handle overwrite logic ourselves, but pass -y so ffmpeg doesn't block)
         # -loglevel error : reduce ffmpeg verbosity unless it's an error
@@ -127,7 +133,7 @@ class VideoConverter:
             "-vcodec", "libx264", "-crf", "23", # standard high-quality h264 settings
             "-acodec", "aac", "-b:a", "192k",   # good audio quality
             "-loglevel", "error",
-            str(output_path)
+            str(temp_path)
         ]
         
         try:
@@ -141,10 +147,10 @@ class VideoConverter:
                     proc.wait() # Ensure it's dead
                     logger.info(f"Conversion cancelled for: {filename}")
                     
-                    # Clean up partial output file if we cancelled
-                    if output_path.exists():
+                    # Clean up only our temporary output; preserve any final file.
+                    if temp_path.exists():
                         try:
-                            output_path.unlink()
+                            temp_path.unlink()
                         except OSError:
                             pass
                             
@@ -161,12 +167,15 @@ class VideoConverter:
             
             # Process finished naturally
             if proc.returncode == 0:
-                if not output_path.exists() or output_path.stat().st_size == 0:
+                if not temp_path.exists() or temp_path.stat().st_size == 0:
                     msg = "✗ Failed"
                     logger.error(f"FFmpeg returned 0, but output file is missing or empty for {filename}.")
                     status = "failed"
                 else:
                     msg = "✓ Completed"
+                    # Atomically publish a completed file. Do not delete the source
+                    # unless the rename succeeds.
+                    os.replace(temp_path, output_path)
                     logger.info(f"Successfully converted: {filename}")
 
                     if self.delete_original:
@@ -188,8 +197,15 @@ class VideoConverter:
             logger.error(f"Exception during conversion of {filename}: {str(e)}")
             status = "failed"
 
+        # On ordinary errors, remove the temp; a force-kill bypasses this and
+        # intentionally leaves it for inspection/recovery.
+        if temp_path.exists():
+            try:
+                temp_path.unlink()
+            except OSError:
+                logger.warning(f"Could not remove temporary output: {temp_path}")
         _safe_print(msg + "\n")
-            
+
         return status
 
 
