@@ -1,0 +1,12 @@
+.git
+.github
+__pycache__
+*.pyc
+.venv
+venv
+dist
+build
+saas
+assets
+*.mov
+*.mp4
