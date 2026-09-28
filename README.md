@@ -104,3 +104,16 @@ python3 -m unittest discover tests
 ```
 
 [View the Source Code on GitHub](https://github.com/MaybeSomeone-arc18/mov2mp4)
+
+### Optional headless Docker CLI
+
+This image is for batch conversion with the command-line engine, not the desktop GUI or the experimental `saas/` prototype. It does not upload files. Docker must be installed locally; the image includes FFmpeg.
+
+```bash
+docker build -f Dockerfile.cli -t mov2mp4-cli .
+mkdir -p videos
+# Put .mov files in videos. Use an absolute path for the bind mount.
+docker run --rm -v "$(pwd)/videos:/work" mov2mp4-cli /work
+```
+
+The generated MP4 files are written alongside the MOV files in the mounted folder. The GitHub Actions Docker CLI smoke job generates a small MOV, converts it in the image, and probes the output codec. Do not treat that as a desktop GUI or Windows container test. The separate Windows CI job builds the installer and runs a bundled-FFmpeg conversion on `windows-latest`.
