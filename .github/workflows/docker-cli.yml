@@ -1,0 +1,26 @@
+name: Docker CLI smoke
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  docker-cli-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build CLI image
+        run: docker build -f Dockerfile.cli -t mov2mp4-cli .
+      - name: Convert generated MOV and probe output
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/mov2mp4-smoke"
+          docker run --rm -v "$RUNNER_TEMP/mov2mp4-smoke:/work" --entrypoint ffmpeg mov2mp4-cli \
+            -hide_banner -loglevel error -f lavfi -i testsrc=duration=1:size=160x90:rate=12 \
+            -c:v qtrle /work/sample.mov
+          docker run --rm -v "$RUNNER_TEMP/mov2mp4-smoke:/work" mov2mp4-cli /work
+          docker run --rm -v "$RUNNER_TEMP/mov2mp4-smoke:/work" --entrypoint ffprobe mov2mp4-cli \
+            -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1 /work/sample.mp4 \
+            | grep -q '^codec_name=h264$'
