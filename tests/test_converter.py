@@ -49,18 +49,24 @@ class TestConverter(unittest.TestCase):
         mock_process = MagicMock()
         mock_process.returncode = 0
         mock_process.poll.return_value = 0
-        mock_popen.return_value = mock_process
-        
+        def produce_temp(cmd, **kwargs):
+            Path(cmd[-1]).write_text("new video")
+            return mock_process
+        mock_popen.side_effect = produce_temp
+
         converter = VideoConverter(overwrite=True)
         input_path = self.base_dir / "test.mov"
         input_path.touch()
         
         out_path = self.base_dir / "test.mp4"
-        out_path.write_text("data")
-        
+        out_path.write_text("old video")
+
         status = converter._convert_single(input_path, out_path, 1, 1)
         
         self.assertEqual(status, "converted")
+        self.assertEqual(out_path.read_text(), "new video")
+        self.assertNotEqual(mock_popen.call_args.args[0][-1], str(out_path))
+        self.assertEqual(list(self.base_dir.glob("*.partial.mp4")), [])
         mock_popen.assert_called_once()
         
     @patch("subprocess.Popen")
@@ -82,6 +88,25 @@ class TestConverter(unittest.TestCase):
         
         self.assertEqual(status, "failed")
 
+    @patch("subprocess.Popen")
+    def test_failed_conversion_preserves_previous_output_and_cleans_temp(self, mock_popen):
+        process = MagicMock(returncode=1)
+        process.poll.return_value = 1
+        process.stderr.read.return_value = "bad input"
+        def partial(cmd, **kwargs):
+            Path(cmd[-1]).write_text("partial")
+            return process
+        mock_popen.side_effect = partial
+        source = self.base_dir / "clip.mov"
+        source.touch()
+        final = self.base_dir / "clip.mp4"
+        final.write_text("previous good video")
+        result = VideoConverter(overwrite=True, delete_original=True)._convert_single(source, final, 1, 1)
+        self.assertEqual(result, "failed")
+        self.assertEqual(final.read_text(), "previous good video")
+        self.assertTrue(source.exists())
+        self.assertEqual(list(self.base_dir.glob("*.partial.mp4")), [])
+
     def test_convert_single_skip_existing(self):
         converter = VideoConverter(overwrite=False)
         input_path = self.base_dir / "test.mov"
@@ -98,14 +123,17 @@ class TestConverter(unittest.TestCase):
         mock_process = MagicMock()
         mock_process.returncode = 0
         mock_process.poll.return_value = 0
-        mock_popen.return_value = mock_process
-        
+        def produce_temp(cmd, **kwargs):
+            Path(cmd[-1]).write_text("new video")
+            return mock_process
+        mock_popen.side_effect = produce_temp
+
         converter = VideoConverter(delete_original=True, overwrite=True)
         input_path = self.base_dir / "test.mov"
         input_path.touch()
         out_path = self.base_dir / "test.mp4"
-        out_path.write_text("data")
-        
+        out_path.write_text("old video")
+
         self.assertTrue(input_path.exists())
         
         converter._convert_single(input_path, out_path, 1, 1)
