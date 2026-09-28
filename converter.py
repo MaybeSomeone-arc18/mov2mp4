@@ -230,6 +230,7 @@ class VideoConverter:
 
             for future in as_completed(future_to_file):
                 file_path = future_to_file[future]
+                status = "failed"  # Preserve a status for callbacks if the worker raises.
                 try:
                     status = future.result()
                     with self.lock:
