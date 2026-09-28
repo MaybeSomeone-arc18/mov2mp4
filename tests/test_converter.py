@@ -33,6 +33,16 @@ class TestConverter(unittest.TestCase):
         
         self.assertEqual(out_path, out_dir / "sub" / "test.mp4")
 
+    def test_worker_exception_reports_failed_status_to_callback(self):
+        converter = VideoConverter()
+        input_path = self.base_dir / "broken.mov"
+        input_path.touch()
+        updates = []
+        with patch.object(converter, "_convert_single", side_effect=RuntimeError("worker crashed")):
+            result = converter.run([input_path], self.base_dir, file_status_callback=lambda path, status: updates.append((path, status)))
+        self.assertEqual(result.failed, 1)
+        self.assertEqual(updates, [(input_path, "failed")])
+
     @patch("subprocess.Popen")
     def test_convert_single_success(self, mock_popen):
         # Setup mock for subprocess
